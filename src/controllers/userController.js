@@ -18,10 +18,10 @@ const signup = async (req, res) => {
         if (userExist) {
             return res.status(400).json({ status: false, error: "user already exist." })
         }
-        const validRole = await findRoleById(role);
-        if (!validRole) {
-            return res.status(400).json({ status: false, error: "Invalid role." })
-        }
+        // const validRole = await findRoleById(role);
+        // if (!validRole) {
+        //     return res.status(400).json({ status: false, error: "Invalid role." })
+        // }
         const hashedPassword = await passwordHashing(password);
         const createdBy = req.user ? req.user : 'admin';
         let userObj = { ...userDTO }
@@ -29,8 +29,8 @@ const signup = async (req, res) => {
         userObj.username = username
         userObj.email = email
         userObj.password = hashedPassword;
-        userObj.role = validRole.id;
-        userObj.isAdmin = validRole.isAdmin;
+        // userObj.role = validRole.id;
+        // userObj.isAdmin = validRole.isAdmin;
         userObj.createdBy = createdBy;
         userObj.modifiedBy = createdBy
 

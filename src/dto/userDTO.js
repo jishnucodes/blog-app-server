@@ -3,7 +3,6 @@ export const userDTO = {
     username: '',
     email: '',
     password: '',
-    role: '',
     roleName: '',
     isAdmin: '',
     createdOn: Date.now(),
@@ -18,7 +17,6 @@ export const buildUserDTO = (obj) => {
     userDTOObj.username = obj?.username;
     userDTOObj.email = obj?.email;
     userDTOObj.password = obj?.password;
-    userDTOObj.role = obj?.role;
     userDTOObj.roleName = obj?.role?.roleName;
     userDTOObj.isAdmin = obj?.role?.isAdmin;
     userDTOObj.createdOn = obj?.createdOn;
