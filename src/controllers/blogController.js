@@ -1,7 +1,7 @@
 import { cloudinaryInstance } from "../config/cloudinary-config.js";
-import { findAllBlogs, createNewBlog, findBlogById } from "../dbLayer/mongoDBLayer/blogQueries.js";
+import { createNewBlog, findAllBlogs, findBlogById } from "../dbLayer/dbLayer.js";
 import { cloudinaryImageUploader } from "../dbLayer/mongoDBLayer/cloudPlatforms/cloudinaryUploading.js";
-import { buildBlogDTO } from "../dto/blogDTO.js";
+import { blogDTO, buildBlogDTO } from "../dto/blogDTO.js";
 import Blog from "../models/blogModel.js";
 
 const addBlogPost = async (req, res) => {
@@ -16,17 +16,16 @@ const addBlogPost = async (req, res) => {
 
         const result = await cloudinaryImageUploader(req.file.path);
         const imageUrl = result.url;
-
-        const blogObj = {
-            id: '',
-            user: userId,
-            blogImage: imageUrl,
-            content: req.body.content,
-            createdBy: username,
-            modifiedBy: username,
-        }
-        const blogDTO =  buildBlogDTO(blogObj)
-        const newBlog = await createNewBlog(blogDTO)
+        const blogObj = {...blogDTO}
+        blogObj.id = '';
+        blogObj.user = userId;
+        blogObj.blogImage = imageUrl;
+        blogObj.content = req.body.content;
+        blogObj.createdBy = username;
+        blogObj.modifiedBy = username;
+        
+        const blogDTOObj =  buildBlogDTO(blogObj)
+        const newBlog = await createNewBlog(blogDTOObj)
         if (!newBlog) {
             return res.status(400).json({
                 status: false,
@@ -86,29 +85,32 @@ const getBlogPostById = async (req, res) => {
     }
 }
 
-const editBlogPost = async (req, res) => {
-    try {
-        if (!req.file) {
-            return res.status(400).json({ error: "No file uploaded." });
-        }
+// const editBlogPost = async (req, res) => {
+//     try {
+//         if (!req.file) {
+//             return res.status(400).json({ error: "No file uploaded." });
+//         }
 
-        const blog = await Blog.findById()
+//         const blog = await Blog.findById()
 
-        const result = await cloudinaryInstance.uploader.upload(req.file.path, async (err, result) => {
-            if (err) {
-                console.log(err, "error");
-                return res.status(500).json({
-                    status: false,
-                    error: "Error"
-                })
-            }
-        });
+//         const result = await cloudinaryInstance.uploader.upload(req.file.path, async (err, result) => {
+//             if (err) {
+//                 console.log(err, "error");
+//                 return res.status(500).json({
+//                     status: false,
+//                     error: "Error"
+//                 })
+//             }
+//         });
 
-        const imageUrl = result.url;
+//         const imageUrl = result.url;
 
-    } catch (error) {
+//     } catch (error) {
 
-    }
-}
+//     }
+// }
 
-export { addBlogPost, getBlogPosts, getBlogPostById };
+export { addBlogPost, 
+    getBlogPosts, 
+    getBlogPostById 
+    };

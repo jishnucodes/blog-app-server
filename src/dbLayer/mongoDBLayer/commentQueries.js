@@ -18,7 +18,9 @@ const findCommentByIdAndUpdate = async (commentId, comment, blogId) => {
 };
 
 const findCommentByIdAndDelete = async (id) => {
-    return await Comment.findByIdAndDelete(id)
+    const deleteComment =  await Comment.findByIdAndDelete(id).populate('blog')
+    console.log(deleteComment);
+    return deleteComment;
 }
 
 

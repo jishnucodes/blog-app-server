@@ -1,11 +1,24 @@
+import { buildUserDTO } from "../../dto/userDTO.js";
 import User from "../../models/userModel.js"
 
-const findOneUser = async (email) => {
-    return await User.findOne({email: email}).populate('role').exec()
+const findOneUser_Mongo = async (email) => {
+    const user =  await User.findOne({email: email}).populate('role').exec();
+    if (user) {
+        const response = buildUserDTO(user);
+        return response;
+    }else {
+        return;
+    }
 }
 
-const createNewUser = async (userObj) => {
+const createNewUser_Mongo = async (userObj) => {
     const user = new User(userObj)
-    return await user.save()
+    await user.save()
+    if (user) {
+        const response = buildUserDTO(user);
+        return response;
+    }else {
+        return;
+    }
 }
-export { findOneUser, createNewUser }
+export { findOneUser_Mongo, createNewUser_Mongo }

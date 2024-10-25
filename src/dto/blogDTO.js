@@ -1,21 +1,30 @@
-const blog = {
+import { buildCommentDTO } from "./commentDTO.js";
+
+export const blogDTO = {
     id: '',
     user: '',
     blogImage: '',
     content: '',
+    comment: [],
+    createdOn: Date.now(),
+    updatedOn: Date.now(),
     createdBy: '',
     modifiedBy: '',
 }
 
 export const buildBlogDTO = (blogObj) => {
-    const blogDTO = {...blog};
-    blogDTO.id = blogObj?.id;
-    blogDTO.user = blogObj?.user;
-    blogDTO.blogImage = blogObj?.blogImage;
-    blogDTO.content = blogObj?.content;
-    blogDTO.createdBy = blogObj?.createdBy;
-    blogDTO.modifiedBy = blogObj?.modifiedBy;
+    console.log("blogObj", blogObj)
+    const blogDTOObj = {...blogDTO};
+    blogDTOObj.id = blogObj?.id;
+    blogDTOObj.user = blogObj?.user;
+    blogDTOObj.blogImage = blogObj?.blogImage;
+    blogDTOObj.content = blogObj?.content;
+    blogDTOObj.comment = blogObj?.comment ? blogObj?.comment.map((obj) => buildCommentDTO(obj)) : [];
+    blogDTOObj.createdOn = blogObj?.createdOn;
+    blogDTOObj.updatedOn = blogObj?.updatedOn;
+    blogDTOObj.createdBy = blogObj?.createdBy;
+    blogDTOObj.modifiedBy = blogObj?.modifiedBy;
 
-    return blogDTO;
+    return blogDTOObj;
 
 } 

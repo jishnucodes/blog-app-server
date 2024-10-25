@@ -1,5 +1,5 @@
 import express from 'express'
-import { addBlogPost, getBlogPostById, getBlogPosts } from '../controllers/blogController.js';
+import { addBlogPost, getBlogPosts, getBlogPostById} from '../controllers/blogController.js';
 import  upload  from '../middleware/upload-middleware.js';
 import authenticateToken from '../middleware/authenticateToken.js';
 

@@ -1,4 +1,5 @@
-import { findByIdAndUpdateBlogByComment } from "../dbLayer/mongoDBLayer/blogQueries.js";
+import { findByIdAndUpdateBlogByComment } from "../dbLayer/dbLayer.js";
+import { findByIdAndRemoveComment_Mongo, findByIdAndUpdateBlogByComment_Mongo } from "../dbLayer/mongoDBLayer/blogQueries.js";
 import { createNewComment, findCommentByIdAndDelete, findCommentByIdAndUpdate } from "../dbLayer/mongoDBLayer/commentQueries.js";
 import { buildCommentDTO } from "../dto/commentDTO.js";
 import Comment from "../models/commentModel.js";
@@ -70,7 +71,8 @@ const editComment = async (req, res) => {
 const deleteComment = async (req, res) => {
     try {
         const {id} = req.body;
-        await findCommentByIdAndDelete(id);
+       const deleteComment =  await findCommentByIdAndDelete(id);
+        await findByIdAndRemoveComment_Mongo(deleteComment.blog.id, id)
         res.status(200).json({
             status: true,
             message: "deleted"

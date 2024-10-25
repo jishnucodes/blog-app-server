@@ -3,14 +3,16 @@ import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import generateAccessToken from "../utils/generateToken.js";
 import Role from "../models/roleModel.js";
-import { buildUserDTO } from "../dto/userDTO.js";
-import { findRoleById } from "../dbLayer/mongoDBLayer/roleQueries.js";
-import { createNewUser, findOneUser } from "../dbLayer/mongoDBLayer/userQueries.js";
+import { buildUserDTO, userDTO } from "../dto/userDTO.js";
+import { createNewUser, findOneUser, findRoleById } from "../dbLayer/dbLayer.js";
+import { enumObj } from "../utils/enumObj.js";
+import { hashedPasswordComparing, passwordHashing } from "../utils/utility.js";
 
 
 const signup = async (req, res) => {
     try {
-        const { username, email, password, role } = req.body;
+        const { username, email, password, role } = req.body; 
+        
         console.log("email", email)
         const userExist = await findOneUser(email);
         if (userExist) {
@@ -20,19 +22,20 @@ const signup = async (req, res) => {
         if (!validRole) {
             return res.status(400).json({ status: false, error: "Invalid role." })
         }
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await passwordHashing(password);
         const createdBy = req.user ? req.user : 'admin';
-        const userObj = {
-             id: '',
-             username,
-             email,
-             password: hashedPassword,
-             role: validRole._id,
-             createdBy: createdBy,
-             modifiedBy: createdBy
-        }
-        const userDTO = buildUserDTO(userObj)
-        const newUser = await createNewUser(userDTO)
+        let userObj = { ...userDTO }
+        userObj.id = '';
+        userObj.username = username
+        userObj.email = email
+        userObj.password = hashedPassword;
+        userObj.role = validRole.id;
+        userObj.isAdmin = validRole.isAdmin;
+        userObj.createdBy = createdBy;
+        userObj.modifiedBy = createdBy
+
+        const userDTOObj = buildUserDTO(userObj)
+        const newUser = await createNewUser(userDTOObj)
         const token = generateAccessToken(newUser);
 
         res.cookie('auth_token', token, {
@@ -43,13 +46,7 @@ const signup = async (req, res) => {
 
         res.status(200).json({
             status: true,
-            responseObject: {
-                id: newUser._id,
-                username: newUser.username,
-                email: newUser.email,
-                roleName: validRole.roleName,
-                isAdmin: validRole.isAdmin,
-            }
+            response: "Successfuly created user"
         });
     } catch (error) {
         console.log(error)
@@ -68,26 +65,33 @@ const login = async (req, res) => {
             return res.status(400).json({ status: false, error: "please signup" });
         }
         console.log(userExist)
-        const isPasswordMatch = await bcrypt.compare(password, userExist.password);
+        const isPasswordMatch = await hashedPasswordComparing(password, userExist.password);
         if (!isPasswordMatch) {
             return res.status(401).json({ success: false, error: "invalid credentials" })
         }
         const token = generateAccessToken(userExist);
 
-        res.cookie('auth_token', token, {
+        const response = {...userDTO}
+        response.id = userExist.id;
+        response.username = userExist.username;
+        response.email = userExist.email;
+        response.password = userExist.password;
+        response.role = userExist.role.id;
+        response.roleName = userExist.role.roleName;
+        response.isAdmin = userExist.role.isAdmin;
+        response.createdOn = userExist.createdOn;
+        response.updatedOn = userExist.updatedOn;
+        response.createdBy = userExist.createdBy;
+        response.modifiedBy = userExist.modifiedBy;
+
+        res.cookie(enumObj.auth_token, token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: process.env.NODE_ENV === enumObj.env_production,
             maxAge: 24 * 60 * 60 * 100,
         })
         res.status(200).json({
             status: true,
-            responseObject: {
-                id: userExist._id,
-                username: userExist.username,
-                email: userExist.email,
-                roleName: userExist.role.roleName,
-                isAdmin: userExist.role.isAdmin,
-            }
+            responseObject: response,
         })
 
     } catch (error) {
@@ -100,4 +104,4 @@ const login = async (req, res) => {
 }
 
 
-export {login, signup}
+export { login, signup }

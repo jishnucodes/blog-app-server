@@ -1,7 +1,14 @@
+import { buildRoleDTO } from "../../dto/roleDTO.js";
 import Role from "../../models/roleModel.js"
 
-const findRoleById = async (roleId) => {
-  return await Role.findById(roleId).exec()
+const findRoleById_Mongo = async (roleId) => {
+   const role = await Role.findById(roleId).exec();
+   if (role) {
+    const response = buildRoleDTO(role);
+    return response;
+   }else{
+    return;
+   }
 }
 
-export {findRoleById}
+export {findRoleById_Mongo}
