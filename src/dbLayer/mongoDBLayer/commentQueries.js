@@ -1,27 +1,40 @@
+import { buildCommentDTO } from "../../dto/commentDTO.js";
 import Comment from "../../models/commentModel.js"
 
-const createNewComment = async (commentObj) => {
+const createNewComment_Mongo = async (commentObj) => {
     const newComment = new Comment(commentObj);
-    return await newComment.save()
+    await newComment.save()
+    if (newComment) {
+        const response = buildCommentDTO(newComment);
+        return response;
+    }else{
+        return;
+    }
 }
 
-const findCommentByIdAndUpdate = async (commentId, comment, blogId) => {
+const findCommentByIdAndUpdate_Mongo = async (commentId, comment, blogId) => {
     const updateData = {};
     if (comment) updateData.comment = comment;
     if (blogId) updateData.blog = blogId;
 
-    return await Comment.findByIdAndUpdate(
+    const updatedComment = await Comment.findByIdAndUpdate(
         commentId, 
         updateData, 
         { new: true }  // Ensure it returns the updated document
     ).exec();
+
+    if (updatedComment) {
+        const response = buildCommentDTO(updatedComment)
+        return response;
+    }else{
+        return;
+    }
 };
 
-const findCommentByIdAndDelete = async (id) => {
+const findCommentByIdAndDelete_Mongo = async (id) => {
     const deleteComment =  await Comment.findByIdAndDelete(id).populate('blog')
-    console.log(deleteComment);
     return deleteComment;
 }
 
 
-export { createNewComment, findCommentByIdAndUpdate, findCommentByIdAndDelete }
+export { createNewComment_Mongo, findCommentByIdAndUpdate_Mongo, findCommentByIdAndDelete_Mongo }

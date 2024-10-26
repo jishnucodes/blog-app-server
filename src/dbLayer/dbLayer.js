@@ -1,5 +1,6 @@
 import User from "../models/userModel.js"
-import { createNewBlog_Mongo, findAllBlogs_Mongo, findBlogById_Mongo, findByIdAndUpdateBlogByComment_Mongo } from "./mongoDBLayer/blogQueries.js"
+import { createNewBlog_Mongo, findAllBlogs_Mongo, findBlogById_Mongo, findByIdAndRemoveComment_Mongo, findByIdAndUpdateBlogByComment_Mongo } from "./mongoDBLayer/blogQueries.js"
+import { createNewComment_Mongo, findCommentByIdAndDelete_Mongo, findCommentByIdAndUpdate_Mongo } from "./mongoDBLayer/commentQueries.js"
 import { findRoleById_Mongo } from "./mongoDBLayer/roleQueries.js"
 import { createNewUser_Mongo, findOneUser_Mongo } from "./mongoDBLayer/userQueries.js"
 
@@ -30,6 +31,24 @@ const findBlogById = async (blogId) => {
 const findByIdAndUpdateBlogByComment = async (blogId, addComment) => {
     return await findByIdAndUpdateBlogByComment_Mongo(blogId, addComment)
 }
+
+const createNewComment = async (commentObj) => {
+    return await createNewComment_Mongo(commentObj)
+}
+
+const findCommentByIdAndUpdate = async (commentId, comment, blogId) => {
+    return await findCommentByIdAndUpdate_Mongo(commentId, comment, blogId)
+
+}
+
+const findCommentByIdAndDelete = async (commentId) => {
+    return await findCommentByIdAndDelete_Mongo(commentId)
+}
+
+const findByIdAndRemoveComment = async (blogId, commentId) => {
+    return await findByIdAndRemoveComment_Mongo(blogId, commentId)
+}
+
 export {
     createNewUser, 
     findOneUser, 
@@ -37,5 +56,9 @@ export {
     createNewBlog,
     findAllBlogs,
     findBlogById,
-    findByIdAndUpdateBlogByComment
+    findByIdAndUpdateBlogByComment,
+    createNewComment,
+    findCommentByIdAndUpdate,
+    findCommentByIdAndDelete,
+    findByIdAndRemoveComment
 }
