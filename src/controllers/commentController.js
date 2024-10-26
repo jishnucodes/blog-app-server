@@ -1,9 +1,15 @@
-import { findByIdAndUpdateBlogByComment, createNewComment, findCommentByIdAndUpdate, findCommentByIdAndDelete, findByIdAndRemoveComment } from "../dbLayer/dbLayer.js";
+import {
+    findByIdAndUpdateBlogByComment,
+    createNewComment,
+    findCommentByIdAndUpdate,
+    findCommentByIdAndDelete,
+    findByIdAndRemoveComment
+} from "../dbLayer/dbLayer.js";
 import { buildCommentDTO } from "../dto/commentDTO.js";
 
-const addComment =async (req, res) => {
+const addComment = async (req, res) => {
     try {
-        const {comment, blogId} = req.body;
+        const { comment, blogId } = req.body;
         const userId = req.user.id;
         const username = req.user.username;
 
@@ -41,7 +47,7 @@ const addComment =async (req, res) => {
 
 const editComment = async (req, res) => {
     try {
-        const {id, comment, blogId} = req.body;
+        const { id, comment, blogId } = req.body;
         console.log(req.body)
 
         const editedComment = await findCommentByIdAndUpdate(id, comment, blogId);
@@ -67,8 +73,8 @@ const editComment = async (req, res) => {
 
 const deleteComment = async (req, res) => {
     try {
-        const {id} = req.body;
-       const deleteComment =  await findCommentByIdAndDelete(id);
+        const { id } = req.body;
+        const deleteComment = await findCommentByIdAndDelete(id);
         await findByIdAndRemoveComment(deleteComment.blog.id, id)
         res.status(200).json({
             status: true,
@@ -83,4 +89,4 @@ const deleteComment = async (req, res) => {
     }
 }
 
-export {addComment, editComment, deleteComment}
+export { addComment, editComment, deleteComment }
